@@ -5,9 +5,10 @@ import {
   validatePhoneNumber,
   validateBirthday,
   validateIpAddress,
-} from './auth.validator.functions';
+  validatePassword,
+} from '../validators/auth.validator.functions';
 
-export type UserProfileDocument = UserProfile & Document;
+// export type UserProfileDocument = UserProfile & Document;
 
 @Schema({ timestamps: true })
 export class UserProfile {
@@ -19,7 +20,13 @@ export class UserProfile {
       message: 'Invalid email address format',
     },
   })
-  email_id: string;
+  email: string;
+
+  @Prop({
+    required: true,
+    unique: true,
+  })
+  password: string;
 
   @Prop({
     required: false,
@@ -30,7 +37,7 @@ export class UserProfile {
   })
   phone_number?: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   name: string;
 
   @Prop()
@@ -68,7 +75,7 @@ export class UserProfile {
 
   @Prop([
     {
-      timestamp: { type: Date },
+      timestamp: { type: Date, default: Date.now },
       ip: {
         type: String,
         validate: {
