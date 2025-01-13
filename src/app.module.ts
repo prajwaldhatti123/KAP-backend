@@ -9,6 +9,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { EmailServiceModule } from './email-service/email-service.module';
+import { UserGoalModule } from './user-goal/user-goal.module';
+import { UserRoutinesModule } from './user-routines/user-routines.module';
 
 @Module({
   imports: [
@@ -54,6 +56,8 @@ import { EmailServiceModule } from './email-service/email-service.module';
     }),
     AuthModule,
     EmailServiceModule,
+    UserGoalModule,
+    UserRoutinesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
