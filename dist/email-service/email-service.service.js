@@ -68,6 +68,29 @@ let EmailServiceService = class EmailServiceService {
             throw new common_1.InternalServerErrorException('Failed to send OTP email');
         }
     }
+    async sendForgotOtpMail(username = 'user', to, subject, text, otp) {
+        const templatePath = `${__dirname}/../../public/templates/forgot-password-email-otp.template.hbs`;
+        const html = await this.templateService.compileTemplate(templatePath, {
+            appName: 'KAP-FIT',
+            otp: otp,
+            userName: username,
+            year: new Date().getFullYear(),
+        });
+        const mailOptions = {
+            from: this.configService.get('email.from'),
+            to,
+            subject,
+            text,
+            html,
+        };
+        try {
+            return this.transporter.sendMail(mailOptions);
+        }
+        catch (error) {
+            console.error('Error sending OTP email:', error);
+            throw new common_1.InternalServerErrorException('Failed to send OTP email');
+        }
+    }
 };
 exports.EmailServiceService = EmailServiceService;
 exports.EmailServiceService = EmailServiceService = __decorate([

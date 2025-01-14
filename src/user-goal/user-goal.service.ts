@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserGoal } from './models/user-gaol.schema';
+import { UserGoal, UserGoalDocument } from './models/user-gaol.schema';
 import { CreateGoalDto } from './dto/create-goal.dto';
 import { Model } from 'mongoose';
 
 @Injectable()
 export class UserGoalService {
   constructor(
-    @InjectModel(UserGoal.name) private userGoalModel: Model<UserGoal>,
+    @InjectModel(UserGoal.name) private userGoalModel: Model<UserGoalDocument>,
   ) {}
 
   // Create a new goal

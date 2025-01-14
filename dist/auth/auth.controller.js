@@ -45,6 +45,14 @@ let AuthController = class AuthController {
         const result = await this.authService.refreshTokens(body.refreshToken);
         return res.status(200).json(result);
     }
+    async forgotPassword(SendOtpDto, res) {
+        const result = await this.authService.forgotPasswordOtp(SendOtpDto.email);
+        res.status(200).json({ message: result });
+    }
+    async resetPassword(createUserDto, res) {
+        const result = await this.authService.create(createUserDto);
+        return res.status(201).json({ message: result });
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -92,6 +100,24 @@ __decorate([
     __metadata("design:paramtypes", [refresh_token_dto_1.RefreshTokenDto, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "refreshToken", null);
+__decorate([
+    (0, common_1.Post)('forgotPassword'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [send_otp_dto_1.SendOtpDto, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "forgotPassword", null);
+__decorate([
+    (0, common_1.Post)('resetPassword'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto, Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "resetPassword", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

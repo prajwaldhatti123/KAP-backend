@@ -12,4 +12,6 @@ export declare class AuthController {
     create(createUserDto: CreateUserDto, res: Response): Promise<Response<any, Record<string, any>>>;
     signout(req: any, res: Response): Promise<Response<any, Record<string, any>>>;
     refreshToken(body: RefreshTokenDto, res: Response): Promise<Response<any, Record<string, any>>>;
+    forgotPassword(SendOtpDto: SendOtpDto, res: Response): Promise<void>;
+    resetPassword(createUserDto: CreateUserDto, res: Response): Promise<Response<any, Record<string, any>>>;
 }

@@ -11,6 +11,9 @@ import { redisStore } from 'cache-manager-redis-yet';
 import { EmailServiceModule } from './email-service/email-service.module';
 import { UserGoalModule } from './user-goal/user-goal.module';
 import { UserRoutinesModule } from './user-routines/user-routines.module';
+import { WorkoutSessionsModule } from './workout-sessions/workout-sessions.module';
+import { ProgressLogModule } from './progress-log/progress-log.module';
+import { NutritionLogModule } from './nutrition-log/nutrition-log.module';
 
 @Module({
   imports: [
@@ -58,6 +61,9 @@ import { UserRoutinesModule } from './user-routines/user-routines.module';
     EmailServiceModule,
     UserGoalModule,
     UserRoutinesModule,
+    WorkoutSessionsModule,
+    ProgressLogModule,
+    NutritionLogModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -31,6 +31,32 @@ let AuthService = class AuthService {
         this.refreshTokenModel = refreshTokenModel;
         this.jwtService = jwtService;
         this.emailService = emailService;
+        this.forgotPasswordOtp = async (email) => {
+            const existingUser = await this.userModel.findOne({ email });
+            if (!existingUser) {
+                throw new common_1.BadRequestException('No account exists please signup');
+            }
+            const otp = this.generateOtp();
+            await this.cacheManager.set(`forgot_password_otp_${email}`, otp, 600000);
+            const result = await this.emailService.sendForgotOtpMail(existingUser.name, email, 'Password reset', 'Please use the below OTP valid for only 10 minutes to reset your password and login into KAP_FIT', otp);
+            if (result)
+                return 'Otp sent successfully to registered email';
+            else
+                throw new common_1.InternalServerErrorException('Internal server occurred while sending mail');
+        };
+    }
+    async initiateRegistration(email) {
+        const existingUser = await this.userModel.findOne({ email });
+        if (existingUser) {
+            throw new common_1.BadRequestException('Email already registered');
+        }
+        const otp = this.generateOtp();
+        await this.cacheManager.set(`register_otp_${email}`, otp, 600000);
+        const result = await this.emailService.sendOtpMail(email, 'Account Verification', 'Please use the below OTP valid for only 10 minutes to login into KAP_FIT and verify yourself', otp);
+        if (result)
+            return 'Otp sent successfully to registered email';
+        else
+            throw new common_1.InternalServerErrorException('Internal server occurred while sending mail');
     }
     async create(createUserDto) {
         const { email, password, otp } = createUserDto;
@@ -38,7 +64,7 @@ let AuthService = class AuthService {
         if (checkEmail) {
             throw new common_1.BadRequestException('Email already exists');
         }
-        const storedOtp = await this.cacheManager.get(`otp_${email}`);
+        const storedOtp = await this.cacheManager.get(`register_otp_${email}`);
         if (!storedOtp || storedOtp !== otp) {
             throw new common_1.UnauthorizedException('Invalid OTP');
         }
@@ -48,21 +74,8 @@ let AuthService = class AuthService {
             password: hashedPassword,
         });
         user.save();
-        await this.cacheManager.del(`otp_${email}`);
+        await this.cacheManager.del(`register_otp_${email}`);
         return 'User created successfully';
-    }
-    async initiateRegistration(email) {
-        const existingUser = await this.userModel.findOne({ email });
-        if (existingUser) {
-            throw new common_1.BadRequestException('Email already registered');
-        }
-        const otp = this.generateOtp();
-        await this.cacheManager.set(`otp_${email}`, otp, 600000);
-        const result = await this.emailService.sendOtpMail(email, 'Account Verification', 'Please use the below OTP valid for only 10 minutes to login into KAP_FIT and verify yourself', otp);
-        if (result)
-            return 'Otp sent successfully to registered email';
-        else
-            throw new common_1.InternalServerErrorException('Internal server occurred while sending mail');
     }
     async login(LoginDto) {
         const { email, password } = LoginDto;
@@ -109,6 +122,37 @@ let AuthService = class AuthService {
         }
         throw new common_1.UnauthorizedException('Invalid session');
     }
+    async refreshTokens(refreshToken) {
+        const token = await this.refreshTokenModel.findOneAndDelete({
+            token: refreshToken,
+            expiryDate: { $gt: new Date() },
+        });
+        if (!token) {
+            throw new common_1.UnauthorizedException('Invalid refresh token');
+        }
+        const user = await this.userModel.findById(token.userId);
+        if (!user) {
+            throw new common_1.UnauthorizedException('Invalid refresh token');
+        }
+        await this.refreshTokenModel.deleteMany({ userId: token.userId });
+        const result = this.generateAccessToken(user._id.toString());
+        return result;
+    }
+    async resetPassword(email, otp, newPassword) {
+        const user = await this.userModel.findOne({ email });
+        if (!user) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        const storedOtp = await this.cacheManager.get(`forgot_password_otp_${email}`);
+        if (!storedOtp || storedOtp !== otp) {
+            throw new common_1.UnauthorizedException('Invalid or expired OTP');
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+        await this.cacheManager.del(`forgot_password_otp_${email}`);
+        return 'Password reset successfully';
+    }
     async generateAccessToken(userId) {
         const accessToken = this.jwtService.sign({ userId });
         const refreshToken = (0, uuid_1.v4)();
@@ -131,22 +175,6 @@ let AuthService = class AuthService {
             expiryDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
         });
         token.save();
-    }
-    async refreshTokens(refreshToken) {
-        const token = await this.refreshTokenModel.findOneAndDelete({
-            token: refreshToken,
-            expiryDate: { $gt: new Date() },
-        });
-        if (!token) {
-            throw new common_1.UnauthorizedException('Invalid refresh token');
-        }
-        const user = await this.userModel.findById(token.userId);
-        if (!user) {
-            throw new common_1.UnauthorizedException('Invalid refresh token');
-        }
-        await this.refreshTokenModel.deleteMany({ userId: token.userId });
-        const result = this.generateAccessToken(user._id.toString());
-        return result;
     }
     async saveLoginHistory(userId) {
         const user = await this.userModel.findById(userId);

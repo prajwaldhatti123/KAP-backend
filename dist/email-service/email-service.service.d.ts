@@ -7,4 +7,5 @@ export declare class EmailServiceService {
     constructor(configService: ConfigService, templateService: TemplateService);
     sendMail(to: string, subject: string, text: string, html?: string): Promise<void>;
     sendOtpMail(to: string, subject: string, text: string, otp?: string): Promise<string>;
+    sendForgotOtpMail(username: string, to: string, subject: string, text: string, otp?: string): Promise<string>;
 }

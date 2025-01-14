@@ -18,6 +18,11 @@ const mongoose_1 = require("@nestjs/mongoose");
 const cache_manager_1 = require("@nestjs/cache-manager");
 const cache_manager_redis_yet_1 = require("cache-manager-redis-yet");
 const email_service_module_1 = require("./email-service/email-service.module");
+const user_goal_module_1 = require("./user-goal/user-goal.module");
+const user_routines_module_1 = require("./user-routines/user-routines.module");
+const workout_sessions_module_1 = require("./workout-sessions/workout-sessions.module");
+const progress_log_module_1 = require("./progress-log/progress-log.module");
+const nutrition_log_module_1 = require("./nutrition-log/nutrition-log.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -65,6 +70,11 @@ exports.AppModule = AppModule = __decorate([
             }),
             auth_module_1.AuthModule,
             email_service_module_1.EmailServiceModule,
+            user_goal_module_1.UserGoalModule,
+            user_routines_module_1.UserRoutinesModule,
+            workout_sessions_module_1.WorkoutSessionsModule,
+            progress_log_module_1.ProgressLogModule,
+            nutrition_log_module_1.NutritionLogModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
