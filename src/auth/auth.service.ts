@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-wrapper-object-types */
 import {
   BadRequestException,
   Inject,
@@ -15,8 +16,6 @@ import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from './dto/create-user.dto';
-import { last } from 'rxjs';
-import { profile } from 'console';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import CryptoUtils from 'src/utils/crypto.utils';

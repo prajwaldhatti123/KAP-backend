@@ -9,18 +9,33 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateRoutineDto } from './dto/create-routine.dto';
 import { UpdateRoutineDto } from './dto/update-routine.dto';
 import { Routine } from './models/user-routine.schema';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RoutineService } from './user-routines.service';
 
+@ApiTags('routines')
+@ApiBearerAuth()
 @Controller('routines')
 @UseGuards(AuthGuard) // Use your custom AuthGuard
 export class RoutineController {
   constructor(private readonly routineService: RoutineService) {}
 
   @Post('create')
+  @ApiOperation({ summary: 'Create a new routine' })
+  @ApiResponse({
+    status: 201,
+    description: 'The routine has been successfully created.',
+    type: Routine,
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   async create(
     @Body() createRoutineDto: CreateRoutineDto,
     @Req() request: any,
@@ -30,12 +45,26 @@ export class RoutineController {
   }
 
   @Get('getAll')
+  @ApiOperation({ summary: 'Get all routines for the user' })
+  @ApiResponse({
+    status: 200,
+    description: 'A list of routines.',
+    type: [Routine],
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   async findAll(@Req() request: any): Promise<Routine[]> {
     const userId = request.userId; // Get userId from the request object
     return this.routineService.findAll(userId);
   }
 
   @Get('routine/:id')
+  @ApiOperation({ summary: 'Get a specific routine' })
+  @ApiResponse({
+    status: 200,
+    description: 'The routine.',
+    type: Routine,
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   async findOne(
     @Param('id') routine_id: string,
     @Req() request: any,
@@ -45,6 +74,16 @@ export class RoutineController {
   }
 
   @Put('routine/:id')
+  @ApiOperation({
+    summary: 'Update a routine',
+    description: 'Update a routine. All fields are optional.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The routine has been successfully updated.',
+    type: Routine,
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   async update(
     @Param('id') routine_id: string,
     @Body() updateRoutineDto: UpdateRoutineDto,
@@ -55,6 +94,13 @@ export class RoutineController {
   }
 
   @Delete('routine/:id')
+  @ApiOperation({ summary: 'Delete a routine' })
+  @ApiResponse({
+    status: 200,
+    description: 'The routine has been successfully deleted.',
+    type: Routine,
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   async delete(
     @Param('id') routine_id: string,
     @Req() request: any,

@@ -61,7 +61,7 @@ export class WorkoutAnalyticsService {
     } catch (error) {
       // Handle errors
       throw new BadRequestException(
-        'Failed to calculate workout volume trends',
+        `Failed to calculate workout volume trends ${error}`,
       );
     }
   }

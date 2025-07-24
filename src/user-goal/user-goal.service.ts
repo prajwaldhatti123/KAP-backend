@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserGoal, UserGoalDocument } from './models/user-gaol.schema';
+import { UserGoal, UserGoalDocument } from './models/user-goal.schema';
 import { CreateGoalDto } from './dto/create-goal.dto';
 import { Model } from 'mongoose';
 

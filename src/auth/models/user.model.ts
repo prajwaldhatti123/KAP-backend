@@ -1,17 +1,43 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   validateEmail,
   validatePhoneNumber,
   validateBirthday,
   validateIpAddress,
-  validatePassword,
 } from '../validators/auth.validator.functions';
 
+class Preferences {
+  @ApiProperty({
+    description: "User's workout goal",
+    example: 'Build muscle',
+    required: false,
+  })
+  workout_goal?: string;
+
+  @ApiProperty({
+    description: 'User notification preference',
+    example: true,
+    required: false,
+  })
+  notification?: boolean;
+}
+
+class LoginHistory {
+  @ApiProperty({ description: 'Timestamp of the login' })
+  timestamp: Date;
+
+  @ApiProperty({ description: 'IP address of the login' })
+  ip: string;
+}
 // export type UserProfileDocument = UserProfile & Document;
 
 @Schema({ timestamps: true })
 export class UserProfile {
+  @ApiProperty({
+    description: "User's email address",
+    example: 'test@example.com',
+  })
   @Prop({
     required: true,
     unique: true,
@@ -28,6 +54,11 @@ export class UserProfile {
   })
   password: string;
 
+  @ApiProperty({
+    description: "User's phone number",
+    example: '1234567890',
+    required: false,
+  })
   @Prop({
     required: false,
     validate: {
@@ -37,12 +68,28 @@ export class UserProfile {
   })
   phone_number?: string;
 
+  @ApiProperty({
+    description: "User's name",
+    example: 'John Doe',
+    required: false,
+  })
   @Prop({ required: false })
   name: string;
 
+  @ApiProperty({
+    description: "User's bio",
+    example: 'Fitness enthusiast',
+    required: false,
+  })
   @Prop()
   bio?: string;
 
+  @ApiProperty({
+    description: "User's gender",
+    example: 'male',
+    enum: ['male', 'female', 'other'],
+    required: false,
+  })
   @Prop({
     enum: ['male', 'female', 'other'],
     required: false,
@@ -50,6 +97,11 @@ export class UserProfile {
   })
   gender?: string;
 
+  @ApiProperty({
+    description: "User's birthday",
+    example: '1990-01-01',
+    required: false,
+  })
   @Prop({
     validate: {
       validator: validateBirthday,
@@ -58,21 +110,26 @@ export class UserProfile {
   })
   birthday?: string;
 
+  @ApiProperty({
+    description: "User's profile picture URL",
+    example: 'https://example.com/profile.jpg',
+    required: false,
+  })
   @Prop()
   profile_pic?: string;
 
+  @ApiProperty({ description: 'Last login date', required: false })
   @Prop({ default: null })
   last_login?: Date;
 
+  @ApiProperty({ type: () => Preferences, required: false })
   @Prop({
     type: Object,
     default: {},
   })
-  preferences?: {
-    workout_goal?: string;
-    notification?: boolean;
-  };
+  preferences?: Preferences;
 
+  @ApiProperty({ type: () => [LoginHistory], required: false })
   @Prop([
     {
       timestamp: { type: Date, default: Date.now },
@@ -85,11 +142,13 @@ export class UserProfile {
       },
     },
   ])
-  login_history?: {
-    timestamp: Date;
-    ip: string;
-  }[];
+  login_history?: LoginHistory[];
 
+  @ApiProperty({
+    description: 'User status',
+    example: 'active',
+    enum: ['active', 'suspended', 'deleted'],
+  })
   @Prop({
     enum: ['active', 'suspended', 'deleted'],
     default: 'active',

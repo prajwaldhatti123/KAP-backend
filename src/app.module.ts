@@ -14,7 +14,7 @@ import { UserRoutinesModule } from './user-routines/user-routines.module';
 import { WorkoutSessionsModule } from './workout-sessions/workout-sessions.module';
 import { ProgressLogModule } from './progress-log/progress-log.module';
 import { NutritionLogModule } from './nutrition-log/nutrition-log.module';
-import { WorkoutAnalyticsModule } from './workout-analytics/workout-analytics.module';
+// import { WorkoutAnalyticsModule } from './workout-analytics/workout-analytics.module';
 
 @Module({
   imports: [
@@ -65,7 +65,7 @@ import { WorkoutAnalyticsModule } from './workout-analytics/workout-analytics.mo
     WorkoutSessionsModule,
     ProgressLogModule,
     NutritionLogModule,
-    WorkoutAnalyticsModule,
+    // WorkoutAnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

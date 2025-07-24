@@ -1,17 +1,69 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
+
+class ExerciseSet {
+  @ApiProperty({ description: 'Set number', example: 1 })
+  set: number;
+
+  @ApiProperty({ description: 'Weight metric (kg or lbs)', example: 'kg' })
+  weight_metric: string;
+
+  @ApiProperty({
+    description: 'Instrument type (e.g., "bar", "color")',
+    example: 'bar',
+    required: false,
+  })
+  inst_type?: string;
+
+  @ApiProperty({ description: 'Weight value', example: 100 })
+  weight_value: number;
+
+  @ApiProperty({ description: 'Number of reps', example: 12 })
+  reps: number;
+
+  @ApiProperty({
+    description: 'Optional notes for the set',
+    example: 'Good form',
+    required: false,
+  })
+  notes?: string;
+}
+
+class WorkoutSessionExercise {
+  @ApiProperty({ description: 'ID of the exercise' })
+  exercise_id: string;
+
+  @ApiProperty({ description: 'Name of the exercise', example: 'Bench Press' })
+  exercise_name: string;
+
+  @ApiProperty({ description: 'Category of the exercise', example: 'Machine' })
+  exercise_category: string;
+
+  @ApiProperty({ description: 'Targeted body part', example: 'Chest' })
+  body_part: string;
+
+  @ApiProperty({ type: [ExerciseSet] })
+  main_sets: ExerciseSet[];
+
+  @ApiProperty({ type: [ExerciseSet] })
+  warmup_sets: ExerciseSet[];
+}
 
 @Schema({ timestamps: true })
 export class WorkoutSession {
+  @ApiProperty({ description: "The user's ID" })
   @Prop({ required: true, ref: 'UserProfile' }) // Reference to the user who logged the session
   user_id: string;
 
+  @ApiProperty({ description: 'The ID of the routine used for the session' })
   @Prop({ required: true, ref: 'Routine' }) // Reference to the routine used for the session
   routine_id: string;
 
+  @ApiProperty({ description: 'Date of the workout session' })
   @Prop({ required: true }) // Date of the workout session
   date: Date;
 
+  @ApiProperty({ type: [WorkoutSessionExercise] })
   @Prop([
     // List of exercises performed in the session
     {
@@ -57,33 +109,21 @@ export class WorkoutSession {
       },
     },
   ])
-  exercises: {
-    exercise_id: string;
-    exercise_name: string;
-    exercise_category: string;
-    body_part: string;
-    main_sets: {
-      set: number;
-      weight_metric: string;
-      inst_type?: string;
-      weight_value: number;
-      reps: number;
-      notes?: string;
-    }[];
-    warmup_sets: {
-      // Always present, but can be empty
-      set: number;
-      weight_metric: string;
-      inst_type?: string;
-      weight_value: number;
-      reps: number;
-      notes?: string;
-    }[];
-  }[];
+  exercises: WorkoutSessionExercise[];
 
+  @ApiProperty({
+    description: 'Optional session duration in minutes',
+    example: 60,
+    required: false,
+  })
   @Prop({ required: false, default: null }) // Optional session duration in minutes
   duration?: number;
 
+  @ApiProperty({
+    description: 'Optional notes for the session',
+    example: 'Felt a bit tired today',
+    required: false,
+  })
   @Prop({ required: false, default: null }) // Optional notes for the session
   notes?: string;
 }
