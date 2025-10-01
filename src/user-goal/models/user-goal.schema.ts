@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { Document } from 'mongoose';
 
 export type UserGoalDocument = UserGoal & Document;
@@ -20,10 +21,12 @@ export class UserGoal {
 
   @ApiProperty({ description: 'The start date of the goal' })
   @Prop({ required: true, default: Date.now })
+  @Type(() => Date)
   start_date: Date;
 
   @ApiProperty({ description: 'The end date of the goal' })
   @Prop({ required: true })
+  @Type(() => Date)
   end_date: Date;
 
   @ApiProperty({

@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsDate } from 'class-validator';
+import { IsString, IsDate, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
+
+export enum GoalType {
+  BULKING = 'bulking',
+  CUTTING = 'cutting',
+  MAINTENANCE = 'maintenance',
+}
 
 export class CreateGoalDto {
   @ApiProperty({
@@ -8,6 +14,9 @@ export class CreateGoalDto {
     example: 'Weight Loss',
   })
   @IsString()
+  @IsEnum(GoalType, {
+    message: 'goal_type must be one of: bulking, cutting, maintenance',
+  })
   goal_type: string;
 
   @ApiProperty({

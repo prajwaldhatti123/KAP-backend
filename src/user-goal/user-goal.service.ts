@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserGoal, UserGoalDocument } from './models/user-goal.schema';
 import { CreateGoalDto } from './dto/create-goal.dto';
@@ -15,8 +15,12 @@ export class UserGoalService {
     user_id: string,
     createGoalDto: CreateGoalDto,
   ): Promise<UserGoal> {
-    const goal = new this.userGoalModel({ user_id, ...createGoalDto });
-    return goal.save();
+    try {
+      const goal = new this.userGoalModel({ user_id, ...createGoalDto });
+      return goal.save();
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
   // Find all goals of a user
