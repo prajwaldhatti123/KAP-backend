@@ -15,6 +15,8 @@ import { WorkoutSessionsModule } from './workout-sessions/workout-sessions.modul
 import { ProgressLogModule } from './progress-log/progress-log.module';
 import { NutritionLogModule } from './nutrition-log/nutrition-log.module';
 // import { WorkoutAnalyticsModule } from './workout-analytics/workout-analytics.module';
+import { ExercisesModule } from './exercises/exercises.module';
+import { DemoModule } from './demo/demo.module';
 
 @Module({
   imports: [
@@ -65,6 +67,8 @@ import { NutritionLogModule } from './nutrition-log/nutrition-log.module';
     WorkoutSessionsModule,
     ProgressLogModule,
     NutritionLogModule,
+    ExercisesModule,
+    DemoModule,
     // WorkoutAnalyticsModule,
   ],
   controllers: [AppController],

@@ -75,7 +75,7 @@ export class AuthController {
   @Post('refreshtoken')
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Tokens refreshed successfully.' })
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @UsePipes(new ValidationPipe())
   async refreshToken(@Body() body: RefreshTokenDto, @Res() res: Response) {
     const result = await this.authService.refreshTokens(body.refreshToken);
