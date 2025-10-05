@@ -6,6 +6,9 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { WorkoutSession } from 'src/workout-sessions/models/workout-session.schema';
+import { UserGoal } from 'src/user-goal/models/user-goal.schema';
+import { ProgressLog } from 'src/progress-log/models/progress-log.schema';
+import { NutritionLog } from 'src/nutrition-log/models/nutrition-log.schema';
 import { VolumeTrendByMuscleGroup } from './interfaces/outputInterfaces';
 
 @Injectable()
@@ -13,6 +16,12 @@ export class WorkoutAnalyticsService {
   constructor(
     @InjectModel(WorkoutSession.name)
     private workoutSessionModel: Model<WorkoutSession>,
+    @InjectModel(UserGoal.name)
+    private userGoalModel: Model<UserGoal>,
+    @InjectModel(ProgressLog.name)
+    private progressLogModel: Model<ProgressLog>,
+    @InjectModel(NutritionLog.name)
+    private nutritionLogModel: Model<NutritionLog>,
   ) {}
 
   // 1. Workout Volume Trends
@@ -242,6 +251,38 @@ export class WorkoutAnalyticsService {
         ? 'Consider increasing volume or changing exercises'
         : 'No plateau detected',
     };
+  }
+
+  // Dashboard Stats
+  async getDashboardStats(user_id: string): Promise<any> {
+    try {
+      const [
+        totalWorkouts,
+        currentGoal,
+        recentWorkouts,
+        recentProgress,
+        recentNutrition,
+        totalRoutines
+      ] = await Promise.all([
+        this.workoutSessionModel.countDocuments({ user_id }),
+        this.userGoalModel.findOne({ user_id, status: 'active' }),
+        this.workoutSessionModel.find({ user_id }).sort({ date: -1 }).limit(5),
+        this.progressLogModel.find({ user_id }).sort({ date: -1 }).limit(5),
+        this.nutritionLogModel.find({ user_id }).sort({ date: -1 }).limit(5),
+        this.workoutSessionModel.distinct('routine_id', { user_id }).then(routineIds => routineIds.length)
+      ]);
+
+      return {
+        totalWorkouts,
+        totalRoutines,
+        currentGoal,
+        recentWorkouts,
+        recentProgress,
+        recentNutrition
+      };
+    } catch (error) {
+      throw new BadRequestException(`Failed to get dashboard stats: ${error.message}`);
+    }
   }
 
   // Helper function to get week number

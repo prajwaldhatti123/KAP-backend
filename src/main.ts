@@ -13,6 +13,8 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('KAP_FIT API')
     .setDescription('The KAP_FIT API documentation')
